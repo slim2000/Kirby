@@ -1,4 +1,4 @@
-# $: << File.expand_path(File.dirname(__FILE__))
+$: << File.expand_path(File.dirname(__FILE__))
 
 require 'rubygems'
 require 'gosu'
@@ -8,12 +8,13 @@ require 'ball'
 class MyGame < Gosu::Window
   def initialize
     super(1200, 1000, false)
+    @background_image = Gosu::Image.new(self, "images/background.png", true)
     @player1 = Player.new(self)
     @balls = 6.times.map {Ball.new(self)}
     @running = true
     @pause = false
   end
-    
+
   def button_down(id)
     if id == Gosu::Button::KbP
       if @pause == false
@@ -26,7 +27,7 @@ class MyGame < Gosu::Window
 
   def update
     if @pause == false
-    
+
       if @running
         if button_down? Gosu::Button::KbLeft
           @player1.move_left
@@ -45,11 +46,13 @@ class MyGame < Gosu::Window
         end
 
         @balls.each {|ball| ball.update}
-     
+        @die_sound = Gosu::Sample.new(self, "sounds/die.wav")
+
         if @player1.hit_by? @balls
+          @die_sound.play
           stop_game!
         end
-      
+
     else
         #the game is currently stopped
       if button_down? Gosu::Button::KbEscape
